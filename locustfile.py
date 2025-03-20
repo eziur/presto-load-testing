@@ -1,19 +1,21 @@
 import logging
+import os
 from locust import HttpUser, task, between, events
 from requests.auth import HTTPBasicAuth
 
-class User(HttpUser):
-    wait_time = between(1, 5)
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD")
 
-    basic = HTTPBasicAuth('presto','T5uUk7cNEiaqDb0ady7E')
+class User(HttpUser):
+    wait_time = between(1, 2)
 
     @task
     def devx_builds(self):
-        self.client.get("/api/devx-builds", auth=("presto", "T5uUk7cNEiaqDb0ady7E"))
+        self.client.get("/api/devx-builds", auth=(USERNAME, PASSWORD))
 
     @task
     def presto_clusters(self):
-        self.client.get("/api/presto-clusters", auth=("presto", "T5uUk7cNEiaqDb0ady7E"))
+        self.client.get("/api/presto-clusters", auth=(USERNAME, PASSWORD))
 
     @events.quitting.add_listener
     def _(environment, **kw):
