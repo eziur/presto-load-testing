@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Locust Load Test
         run: |
-          locust -f locustfile.py --headless -u 100 -r 10 --run-time 1m --csv=locust_report
+          locust -f locustfile.py --headless --users 100 --spaw-rate 10 --run-time 1m --csv=locust_report -H https://presto.ibm.prestodb.dev/
 
       - name: Upload Locust Report
         uses: actions/upload-artifact@v4
