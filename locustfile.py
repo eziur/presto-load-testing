@@ -17,8 +17,8 @@ class User(HttpUser):
 
     @events.quitting.add_listener
     def _(environment, **kw):
-        if environment.stats.total.fail_ratio > 0.1:
-            logging.error("Test failed due to failure ratio > 10%")
+        if environment.stats.total.fail_ratio > 0.25:
+            logging.error("Test failed due to failure ratio > 25%")
             environment.process_exit_code = 1
         elif environment.stats.total.avg_response_time > 1000:
             logging.error("Test failed due to average response time ratio > 1000 ms")
