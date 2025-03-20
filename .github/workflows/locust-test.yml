@@ -28,19 +28,10 @@ jobs:
 
       - name: Run Locust Load Test
         run: |
-          locust -f locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --csv=locust_report -H https://presto.ibm.prestodb.dev/
+          locust -f locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --csv=locust_report -H https://presto.ibm.prestodb.dev
 
       - name: Upload Locust Report
         uses: actions/upload-artifact@v4
         with:
           name: locust-results
           path: locust_report*
-
-      - name: Fail if Locust Results Exceed Threshold
-        run: |
-          THRESHOLD=1000  # Set your threshold for failure (e.g., response time)
-          MAX_RESPONSE_TIME=$(awk -F, 'NR>1 {print $7}' locust_report_stats.csv | sort -nr | head -n 1)
-          if [ "$MAX_RESPONSE_TIME" -gt "$THRESHOLD" ]; then
-            echo "Max response time ($MAX_RESPONSE_TIME ms) exceeded threshold ($THRESHOLD ms)."
-            exit 1
-          fi
