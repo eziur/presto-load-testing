@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install locust pandas jupyter matplotlib
+          pip install locust pandas jupyter matplotlib nbconvert
 
       - name: Run Locust Load Test
         env:
@@ -35,7 +35,8 @@ jobs:
 
       - name: Run Jupyter Notebook to Process Locust Report
         run: |
-          jupyter nbconvert --to notebook --execute process_locust.ipynb --output processed_results.ipynb
+          jupyter nbconvert --to notebook --execute test/process_locust.ipynb --output processed_results.
+          jupyter nbconvert --to html processed_results.ipynb
 
       - name: Upload Locust Report
         uses: actions/upload-artifact@v4
@@ -46,5 +47,7 @@ jobs:
       - name: Upload Processed Jupyter Notebook
         uses: actions/upload-artifact@v4
         with:
-          name: processed-notebook
-          path: processed_results.ipynb
+          name: processed-results
+          path: |
+            processed_results.ipynb
+            processed_results.html
