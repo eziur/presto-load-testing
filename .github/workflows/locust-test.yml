@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Jupyter Notebook to Process Locust Report
         run: |
-          jupyter nbconvert --to notebook --execute test/process_locust.ipynb --output processed_results.
+          jupyter nbconvert --to notebook --execute test/process_locust.ipynb --output processed_results.ipynb
           jupyter nbconvert --to html processed_results.ipynb
 
       - name: Upload Locust Report
