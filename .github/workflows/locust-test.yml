@@ -24,17 +24,27 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install locust
+          pip install locust pandas jupyter matplotlib
 
       - name: Run Locust Load Test
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: |
-          locust -f locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --stop-timeout 10s --csv=locust_report -H https://presto.ibm.prestodb.dev
+          locust -f test/locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --stop-timeout 10s --csv=locust_report -H https://presto.ibm.prestodb.dev
+
+      - name: Run Jupyter Notebook to Process Locust Report
+        run: |
+          jupyter nbconvert --to notebook --execute process_locust.ipynb --output processed_results.ipynb
 
       - name: Upload Locust Report
         uses: actions/upload-artifact@v4
         with:
           name: locust-results
           path: locust_report*
+
+      - name: Upload Processed Jupyter Notebook
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-notebook
+          path: processed_results.ipynb
