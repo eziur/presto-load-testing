@@ -45,7 +45,8 @@ jobs:
           git checkout load-testing-results
           ls -al
           pwd
-          cp -r locust-results results-$(date '+%Y-%m-%d-%H-%M-%S')
+          mkdir locust-results-$(date '+%Y-%m-%d-%H-%M-%S')
+          cp locust_report_* locust-results-$(date '+%Y-%m-%d-%H-%M-%S')
           git add locust-results-$(date '+%Y-%m-%d-%H-%M-%S')
           git commit -m "Load testing results"
           git push
