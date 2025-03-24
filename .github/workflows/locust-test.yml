@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install locust pandas jupyter matplotlib nbconvert
+          pip install locust
 
       - name: Run Locust Load Test
         env:
@@ -33,26 +33,16 @@ jobs:
         run: |
           locust -f test/locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --stop-timeout 10s --csv=locust_report -H https://presto.ibm.prestodb.dev
 
-      - name: Upload Locust Stats CSV
+      - name: Upload Locust Report
         uses: actions/upload-artifact@v4
         with:
-          name: locust-report-stats
-          path: locust_report_stats.csv
+          name: locust-results
+          path: locust_report*
 
-      - name: Upload Locust Requests CSV
-        uses: actions/upload-artifact@v4
-        with:
-          name: locust-report-requests
-          path: locust_report_requests.csv
-
-      - name: Upload Processed Results CSV
-        uses: actions/upload-artifact@v4
-        with:
-          name: processed-results
-          path: processed_results.csv
-
-      - name: Upload Response Time Plot
-        uses: actions/upload-artifact@v4
-        with:
-          name: response-time-plot
-          path: response_times.png
+      - name: Commit into branch
+        run: |
+          git checkout load-testing-results
+          cp -r locust-results results-$(date '+%Y-%m-%d-%H-%M-%S')
+          git add locust-results-$(date '+%Y-%m-%d-%H-%M-%S')
+          git commit -m "Load testing results"
+          git push
