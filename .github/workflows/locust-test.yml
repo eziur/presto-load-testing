@@ -41,6 +41,7 @@ jobs:
 
       - name: Commit into branch
         run: |
+          git fetch load-testing-results
           git checkout load-testing-results
           cp -r locust-results results-$(date '+%Y-%m-%d-%H-%M-%S')
           git add locust-results-$(date '+%Y-%m-%d-%H-%M-%S')
