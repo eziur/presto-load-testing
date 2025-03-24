@@ -9,6 +9,8 @@ on:
       - main
   workflow_dispatch:
 
+permissions: write-all
+
 jobs:
   load-test:
     runs-on: ubuntu-latest
@@ -49,5 +51,5 @@ jobs:
           git add ${LOCUST_RESULTS}
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git commit -m "Load testing results"
+          git commit -m "Load testing results" 
           git push
