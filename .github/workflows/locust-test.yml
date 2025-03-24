@@ -47,5 +47,7 @@ jobs:
           mkdir ${LOCUST_RESULTS}
           cp locust_report_* ${LOCUST_RESULTS}
           git add ${LOCUST_RESULTS}
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git commit -m "Load testing results"
           git push
