@@ -1,5 +1,7 @@
 import logging
 import os
+import random
+import json
 import locust.stats
 from locust import HttpUser, task, between, events
 
@@ -32,3 +34,12 @@ class User(HttpUser):
             environment.process_exit_code = 1
         else:
             environment.process_exit_code = 0
+
+    def generate_random_location(self):
+        lat_min, lat_max = 32.5343, 33.5051
+        lon_min, lon_max = -117.2825, -116.0806
+
+        lat = random.uniform(lat_min, lat_max)
+        lon = random.uniform(lon_min, lon_max)
+
+        return json.dumps({lat, lon})
