@@ -1,0 +1,10 @@
+Count,Message,Traceback,Nodes
+5450,[Errno 2] No such file or directory: 'rzrisk.json',"  File ""/opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/locust/user/task.py"", line 340, in run
+    self.execute_next_task()
+  File ""/opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/locust/user/task.py"", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File ""/opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/locust/user/task.py"", line 490, in execute_task
+    task(self.user)
+  File ""/home/runner/work/presto-load-testing/presto-load-testing/test/locustfile.py"", line 31, in temp
+    with open('rzrisk.json', 'r') as f:
+",local
