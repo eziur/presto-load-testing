@@ -28,7 +28,7 @@ class User(HttpUser):
     def temp(self):
         lat, lon = generate_random_location()
 
-        with open('rzrisk.json', 'r') as f:
+        with open('test/rzrisk.json', 'r') as f:
             payload = json.load(f)
 
         payload['location']['latitude'] = lat
