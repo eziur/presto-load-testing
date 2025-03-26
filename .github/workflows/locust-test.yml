@@ -30,10 +30,12 @@ jobs:
 
       - name: Run Locust Load Test
         env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          USER: ${{ secrets.USER }}
+          DATA: ${{ secrets.DATA }}
+          TOKEN: ${{ secrets.TOKEN }}
         run: |
-          locust -f test/locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --stop-timeout 10s --csv=locust_report -H https://presto.ibm.prestodb.dev
+          locust -f test/locustfile.py --headless --users 100 --spawn-rate 10 --run-time 1m --stop-timeout 10s --csv=locust_report -H https://risk.$ENVIRONMENT.redzone.zone/api/v1/$USER/rzrisk/
 
       - name: Upload Locust Report
         uses: actions/upload-artifact@v4
