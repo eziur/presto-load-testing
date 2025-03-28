@@ -5,12 +5,10 @@ import json
 import locust.stats
 from locust import HttpUser, task, between, events
 
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'staging')
-USER = os.getenv('USER', 'RZADMIN0')
-DATA = os.getenv('DATA')
-TOKEN = os.getenv('TOKEN')
+RZLT_ORG = os.getenv('RZLT_ORG', 'RZADMIN0')
+RZLT_API_TOKEN = os.getenv('RZLT_API_TOKEN')
 
-locust.stats.CSV_STATS_INTERVAL_SEC = 1 # logging interval
+locust.stats.CSV_STATS_INTERVAL_SEC = 10 # logging interval
 
 def generate_random_location():
     lat_min, lat_max = 32.5343, 33.5051
@@ -21,30 +19,80 @@ def generate_random_location():
 
     return lat, lon
 
+def generate_rzrisk_payload():
+    payload = {
+      "metadata": {
+        "requestTag": "locust",
+        "units": {
+          "distance": "miles"
+        }
+      },
+      "location": {
+        "address": "8127 Silverwind Dr",
+        "city": "San Diego",
+        "state": "CA",
+        "zip": "92127",
+        "latitude": 33.022889,
+        "longitude": -117.143715
+      },
+      "rzFeatures": {
+        "insightScoring": {
+          "constructionType": 0,
+          "noncombustibleVerticalClearance": 0,
+          "defensibleZone2": 0,
+          "defensibleZone1": 1,
+          "roofType": 1,
+          "enclosedEaves": 1,
+          "wildfirePreparedCommunity": 0,
+          "yearBuilt": 0,
+          "fireResistiveVents": 1,
+          "wildfireMitigationCertification": 0,
+          "occupancyType": 1,
+          "exteriorMaterial": 0,
+          "defensibleZone3": 0,
+          "woodDeck": 0,
+          "windowPaneType": 1
+        },
+        "correlatedRiskZones": True,
+        "averageAnnualLoss": {
+          "siteDeductibleAsPctOfTotal": 10,
+          "totalInsuredValue": 4000000
+        },
+        "firewiseCommunity": True,
+        "distanceToHigherRiskClasses": True,
+        "activeFires": True,
+        "riskScoring": True,
+        "fireHistory": True,
+        "fireRiskReductionCommunity": True
+      }
+    }
+
+    lat, lon = generate_random_location()
+    payload['location']['latitude'] = lat
+    payload['location']['longitude'] = lon
+    return payload
+
 class User(HttpUser):
-    wait_time = between(1, 1)
+    wait_time = between(1, 2)
+
+    def on_start(self):
+        self.client.headers = {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + RZLT_API_TOKEN,
+            "Content-Type": "application/json",
+        }
 
     @task
-    def temp(self):
-        lat, lon = generate_random_location()
+    def test_rzrisk(self):
+        payload = generate_rzrisk_payload()
 
-        with open('test/rzrisk.json', 'r') as f:
-            payload = json.load(f)
-
-        payload['location']['latitude'] = lat
-        payload['location']['longitude'] = lon
-
-        payload = json.dumps(payload)
-
-        self.client.post(
-            url='https://risk.' + ENVIRONMENT + '.redzone.zone/api/v1/' + USER + '/rzrisk/',
-            data=payload,
-            auth=None,
-            headers={
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + TOKEN,
-                'Content-Type': 'application/json'},
-        )
+        with self.client.post(
+            url='/api/v1/' + RZLT_ORG + '/rzrisk',
+            data=json.dumps(payload),
+            catch_response=True
+        ) as response:
+            if response.status_code != 200:
+                response.failure(f"Request failed! Status: {response.status_code}, Response: {response.text}")
 
     @events.quitting.add_listener
     def _(environment, **kw):
@@ -60,3 +108,6 @@ class User(HttpUser):
         else:
             environment.process_exit_code = 0
 
+if __name__ == "__main__":
+    import os
+    os.system("locust")
