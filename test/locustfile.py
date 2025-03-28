@@ -87,7 +87,7 @@ class User(HttpUser):
         payload = generate_rzrisk_payload()
 
         with self.client.post(
-            url='/api/v1/' + RZLT_ORG + '/rzrisk',
+            url='https://risk.staging.redzone.zone/api/v1/' + RZLT_ORG + '/rzrisk',
             data=json.dumps(payload),
             catch_response=True
         ) as response:
