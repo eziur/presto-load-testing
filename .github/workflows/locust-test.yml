@@ -51,7 +51,7 @@ jobs:
         run: |
           locust --locustfile load_test/locustfile.py \
             --host ${{ github.event.inputs.${RZLT_HOST} }} \
-            --run-time ${RZLT_RUNTIME_MINUTES} \
+            --run-time ${RZLT_RUNTIME_MINUTES}m \
             --spawn-rate 10 \
             --users ${RZLT_USERS} \
             --stop-timeout 10s \
