@@ -49,8 +49,8 @@ jobs:
           RZLT_ORG: ${{ secrets.RZLT_ORG}}
           RZLT_API_TOKEN: ${{ secrets.RZLT_API_TOKEN }}
         run: |
-          locust --locustfile test/locustfile.py \
-            --host ${{ github.event.inputs.RZLT_HOST }} \
+          locust -f test/locustfile.py \
+            --host ${RZLT_HOST} \
             --run-time ${RZLT_RUNTIME_MINUTES}m \
             --spawn-rate 10 \
             --users ${RZLT_USERS} \
