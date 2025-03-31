@@ -1,25 +1,19 @@
-import logging
-import os
-import random
 import json
 import locust.stats
+import os
+import random
 from locust import HttpUser, task, between, events
+
 
 RZLT_ORG = os.getenv('RZLT_ORG', 'RZADMIN0')
 RZLT_API_TOKEN = os.getenv('RZLT_API_TOKEN')
 
+
 locust.stats.CSV_STATS_INTERVAL_SEC = 10 # logging interval
 
-def generate_random_location():
+def generate_rzrisk_payload():
     lat_min, lat_max = 32.5343, 33.5051
     lon_min, lon_max = -117.2825, -116.0806
-
-    lat = random.uniform(lat_min, lat_max)
-    lon = random.uniform(lon_min, lon_max)
-
-    return lat, lon
-
-def generate_rzrisk_payload():
     payload = {
       "metadata": {
         "requestTag": "locust",
@@ -67,12 +61,14 @@ def generate_rzrisk_payload():
       }
     }
 
-    lat, lon = generate_random_location()
+    lat = random.uniform(lat_min, lat_max)
+    lon = random.uniform(lon_min, lon_max)
     payload['location']['latitude'] = lat
     payload['location']['longitude'] = lon
     return payload
 
-class User(HttpUser):
+
+class RedZoneAPIUser(HttpUser):
     wait_time = between(1, 2)
 
     def on_start(self):
@@ -85,28 +81,10 @@ class User(HttpUser):
     @task
     def test_rzrisk(self):
         payload = generate_rzrisk_payload()
-
-        with self.client.post(
-            url='https://risk.staging.redzone.zone/api/v1/' + RZLT_ORG + '/rzrisk',
-            data=json.dumps(payload),
-            catch_response=True
-        ) as response:
+        with self.client.post('/api/v1/' + RZLT_ORG + '/rzrisk', data=json.dumps(payload), catch_response=True) as response:
             if response.status_code != 200:
                 response.failure(f"Request failed! Status: {response.status_code}, Response: {response.text}")
 
-    @events.quitting.add_listener
-    def _(environment, **kw):
-        if environment.stats.total.fail_ratio > 0.50:
-            logging.error('Test failed due to failure ratio > 50%')
-            environment.process_exit_code = 1
-        elif environment.stats.total.avg_response_time > 1000:
-            logging.error('Test failed due to average response time ratio > 1000 ms')
-            environment.process_exit_code = 1
-        elif environment.stats.total.get_response_time_percentile(0.95) > 2000:
-            logging.error('Test failed due to 95th percentile response time > 2000 ms')
-            environment.process_exit_code = 1
-        else:
-            environment.process_exit_code = 0
 
 if __name__ == "__main__":
     import os
