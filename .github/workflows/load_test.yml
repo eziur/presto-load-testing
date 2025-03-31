@@ -1,0 +1,75 @@
+name: API Load Testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      RZLT_HOST:
+        type: string
+        default: "https://risk.staging.redzone.zone"
+        description: "Load testing server base URL."
+        required: true
+      RZLT_RUNTIME_MINUTES:
+        type: string
+        default: "5"
+        description: "Load testing run time in minutes."
+        required: true
+      RZLT_SPAWN_RATE:
+        type: string
+        default: "1"
+        description: "The number of users spawned per second until the target number of users is reached."
+        required: true
+      RZLT_USERS:
+        type: string
+        default: "100"
+        description: "The total number of users to simulate during the test."
+        required: true
+      RZLT_API_TOKEN:
+        type: string
+        default: "please specify your token"
+        description: "The API access token to call the service-under-test."
+        required: false
+      RZLT_ORG:
+        type: string
+        default: "please specify the service user org"
+        description: "The service user org, i.e. tenant."
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install locust
+
+      - name: Run Locust Load Test
+        env:
+          RZLT_API_TOKEN: ${{ secrets.RZLT_API_TOKEN || github.event.inputs.RZLT_API_TOKEN }}
+          RZLT_ORG: ${{ secrets.RZLT_ORG || github.event.inputs.RZLT_ORG }}
+        run: |
+          locust --locustfile load_test/locustfile.py \
+            --host ${{ inputs.RZLT_HOST }} \
+            --run-time ${{ inputs.RZLT_HOST.RZLT_RUNTIME_MINUTES }}m \
+            --spawn-rate ${{ inputs.RZLT_HOST.RZLT_SPAWN_RATE }} \
+            --users ${{ inputs.RZLT_HOST.RZLT_USERS }} \
+            --stop-timeout 10s \
+            --autostart
+            ls -al
+      - name: Upload Locust Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results
+          path: locust_report*
