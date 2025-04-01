@@ -1,8 +1,8 @@
 import random
 import pytest
 
-lat_min, lat_max = 32.5343, 33.5051
-lon_min, lon_max = -117.2825, -116.0806
+lat_min, lat_max = 32.8182, 33.5051
+lon_min, lon_max = -117.2433, -116.0806
 
 def generate_rzrisk_payload():
 
