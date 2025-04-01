@@ -12,8 +12,8 @@ RZLT_API_TOKEN = os.getenv('RZLT_API_TOKEN')
 locust.stats.CSV_STATS_INTERVAL_SEC = 10 # logging interval
 
 def generate_rzrisk_payload():
-    lat_min, lat_max = 32.5343, 33.5051
-    lon_min, lon_max = -117.2825, -116.0806
+    lat_min, lat_max = 32.8182, 33.5051
+    lon_min, lon_max = -117.2433, -116.0806
     payload = {
       "metadata": {
         "requestTag": "locust",
