@@ -2,6 +2,7 @@ import json
 import locust.stats
 import os
 import random
+import pytest
 from locust import HttpUser, task, between, events
 
 
@@ -85,6 +86,10 @@ class RedZoneAPIUser(HttpUser):
             if response.status_code != 200:
                 response.failure(f"Request failed! Status: {response.status_code}, Response: {response.text}")
 
+@pytest.fixture(scope="session")
+def generate_payload():
+    payload = generate_rzrisk_payload()
+    return payload['location']['latitude'], payload['location']['longitude']
 
 if __name__ == "__main__":
     import os
