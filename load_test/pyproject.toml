@@ -6,6 +6,7 @@ authors = [
     {name = "Linsong Wang",email = "lwang@redzone.co"}
 ]
 readme = "README.md"
+packages = [{ include = "load_test", from = "src" }]
 requires-python = ">=3.10"
 dependencies = [
     "locust (>=2.33.2,<3.0.0)"
