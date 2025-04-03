@@ -1,20 +1,13 @@
 import json
-import locust.stats
-import os
 import random
-import pytest
-from locust import HttpUser, task, between, events
 
-
-RZLT_ORG = os.getenv('RZLT_ORG', 'RZADMIN0')
-RZLT_API_TOKEN = os.getenv('RZLT_API_TOKEN')
-
+import constants
+import locust.stats
+from locust import HttpUser, between, events, task
 
 locust.stats.CSV_STATS_INTERVAL_SEC = 10 # logging interval
 
 def generate_rzrisk_payload():
-    lat_min, lat_max = 32.8182, 33.5051
-    lon_min, lon_max = -117.2433, -116.0806
     payload = {
       "metadata": {
         "requestTag": "locust",
@@ -62,8 +55,8 @@ def generate_rzrisk_payload():
       }
     }
 
-    lat = random.uniform(lat_min, lat_max)
-    lon = random.uniform(lon_min, lon_max)
+    lat = random.uniform(constants.LAT_MIN, constants.LAT_MAX)
+    lon = random.uniform(constants.LON_MIN, constants.LON_MAX)
     payload['location']['latitude'] = lat
     payload['location']['longitude'] = lon
     return payload
@@ -75,21 +68,16 @@ class RedZoneAPIUser(HttpUser):
     def on_start(self):
         self.client.headers = {
             "Accept": "application/json",
-            "Authorization": "Bearer " + RZLT_API_TOKEN,
+            "Authorization": "Bearer " + constants.RZLT_API_TOKEN,
             "Content-Type": "application/json",
         }
 
     @task
     def test_rzrisk(self):
         payload = generate_rzrisk_payload()
-        with self.client.post('/api/v1/' + RZLT_ORG + '/rzrisk', data=json.dumps(payload), catch_response=True) as response:
+        with self.client.post('/api/v1/' + constants.RZLT_ORG + '/rzrisk', data=json.dumps(payload), catch_response=True) as response:
             if response.status_code != 200:
                 response.failure(f"Request failed! Status: {response.status_code}, Response: {response.text}")
-
-@pytest.fixture(scope="session")
-def generate_payload():
-    payload = generate_rzrisk_payload()
-    return payload['location']['latitude'], payload['location']['longitude']
 
 if __name__ == "__main__":
     import os

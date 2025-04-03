@@ -1,5 +1,5 @@
 [project]
-name = "load-test"
+name = "load_test"
 version = "0.1.0"
 description = ""
 authors = [
@@ -11,12 +11,15 @@ dependencies = [
     "locust (>=2.33.2,<3.0.0)"
 ]
 
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
 ]
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "tests"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,7 @@
+import os
+
+LAT_MIN, LAT_MAX = 32.8182, 33.5051
+LON_MIN, LON_MAX = -117.2433, -116.0806
+
+RZLT_ORG = os.getenv('RZLT_ORG', 'RZADMIN0')
+RZLT_API_TOKEN = os.getenv('RZLT_API_TOKEN')
