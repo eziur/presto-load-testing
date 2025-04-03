@@ -1,4 +1,5 @@
-from load_test import constants, locustfile
+from src import constants, locustfile
+
 
 def test_generate_coordinates():
     payload = locustfile.generate_rzrisk_payload()

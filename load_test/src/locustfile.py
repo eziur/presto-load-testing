@@ -1,9 +1,10 @@
 import json
 import random
 
-import constants
 import locust.stats
 from locust import HttpUser, between, events, task
+
+from src import constants
 
 locust.stats.CSV_STATS_INTERVAL_SEC = 10 # logging interval
 

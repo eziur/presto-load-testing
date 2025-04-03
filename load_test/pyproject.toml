@@ -1,20 +1,17 @@
-[project]
+[tool.poetry]
 name = "load_test"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Linsong Wang",email = "lwang@redzone.co"}
-]
+authors = ["Linsong Wang <lwang@redzone.co>"]
 readme = "README.md"
-packages = [{ include = "load_test", from = "src" }]
-requires-python = ">=3.10"
-dependencies = [
-    "locust (>=2.33.2,<3.0.0)"
-]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+locust = ">=2.33.2,<3.0.0"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--import-mode=importlib",
+    "--import-mode=importlib"
 ]
 
 [tool.isort]
